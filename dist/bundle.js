@@ -46070,6 +46070,7 @@ var RenameDirModalDialogController = React.createClass({
     },
 
     editAction: function () {
+        var thisComponent = this;
         console.log('RenameDirectoryController::editAction() > ' + this.state.newName);
         if (!isWebNameValid(this.state.newName)) {
             return;
@@ -46077,7 +46078,7 @@ var RenameDirModalDialogController = React.createClass({
         var data = {
             "name": this.state.newName
         };
-        this.props.directoryRenamed(this.state.newName);
+        var newName = this.state.newName;
         this.close();
         $.ajax({
             method: 'PUT',
@@ -46085,6 +46086,9 @@ var RenameDirModalDialogController = React.createClass({
             processData: false,
             data: JSON.stringify(data),
             cache: false,
+            success: function () {
+                thisComponent.props.directoryRenamed(newName);
+            },
             error: function (xhr, status, err) {
                 console.error(this.url, status, err.toString());
             }.bind(this)
@@ -46196,7 +46200,7 @@ var DirectoryBar = React.createClass({
     },
 
     directoryRenamed: function (newName) {
-        this.props.directoryRenamed(newName);
+        this.props.reloadPanel();
         console.log('DirectoryBar::renamed() > ' + newName);
     },
 
@@ -46320,13 +46324,13 @@ var DirectoryContent = React.createClass({
 
         this.ajaxGetPages();
 
-        setInterval(this.ajaxGetPages, 1000 * 60);
+        //setInterval(this.ajaxGetPages, (1000*60));
     },
 
     render: function () {
-        console.log('  [render] dir > ' + this.props.name);
+        //console.log('  [render] dir > '+ this.props.name);
         var renderedPages = this.state.pages.map(function (page) {
-            console.log('    [render] frame > ' + page.name + ", " + page.order);
+            //console.log('    [render] frame > ' + page.name + ", " + page.order);
             return React.createElement(PageFrame, { name: page.name, url: page.url, key: page.order });
         });
         return React.createElement(
@@ -46372,13 +46376,18 @@ var Directory = React.createClass({
         console.log("Directory::addNewPage");
     },
 
+    reloadPanel: function () {
+        this.props.reloadPanel();
+    },
+
     render: function () {
         return React.createElement(
             'div',
             { className: 'directory' },
             React.createElement(DirectoryBar, {
                 dirName: this.props.name,
-                addNewPageOptimistically: this.addNewPageOptimistically
+                addNewPageOptimistically: this.addNewPageOptimistically,
+                reloadPanel: this.reloadPanel
             }),
             React.createElement(DirectoryContentWrapper, {
                 name: this.props.name,
@@ -46461,7 +46470,7 @@ var WebPanelContent = React.createClass({
 
         this.ajaxGetDirectories();
 
-        setInterval(this.ajaxGetDirectories, 1000 * 60);
+        //setInterval(this.ajaxGetDirectories, (1000*60));
     },
 
     reloadPanel: function () {
@@ -46472,6 +46481,7 @@ var WebPanelContent = React.createClass({
     render: function () {
         var panelComponent = this;
         var renderedDirs = this.state.dirs.map(function (dir) {
+            console.log('[render] panel > ' + dir.name);
             return React.createElement(Directory, {
                 name: dir.name,
                 order: dir.order,
