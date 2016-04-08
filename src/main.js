@@ -185,7 +185,7 @@ var DeletePageButton = React.createClass({
     deleteAction: function ( e ) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('delete page')
+        this.props.deletePage();
     },
 
     render: function () {
@@ -199,25 +199,141 @@ var DeletePageButton = React.createClass({
     }
 });
 
+var DeletePageModalDialog = React.createClass({
+
+    getInitialState: function () {
+        return {
+            open: false,
+            deleteButtonHover: false,
+            cancelButtonHover: false
+        };
+    },
+
+    show: function () {
+        this.setState({open: true});
+    },
+
+    close: function () {
+        this.setState({
+            open: false,
+            deleteButtonHover: false,
+            cancelButtonHover: false
+        });
+    },
+
+    deleteAction: function () {
+        this.close();
+        this.props.pageDeletedCallback(this.props.page);
+    },
+
+    askDeletePage: function () {
+        this.show();
+    },
+
+    deleteButtonToggle: function () {
+        this.setState({deleteButtonHover: !this.state.deleteButtonHover});
+    },
+
+    cancelButtonToggle: function () {
+        this.setState({cancelButtonHover: !this.state.cancelButtonHover});
+    },
+
+    getDeleteButtonStyle: function () {
+        if ( this.state.deleteButtonHover ) {
+            return dialogButtonStyleHover;
+        } else {
+            return dialogButtonStyle;
+        }
+    },
+
+    getCancelButtonStyle: function () {
+        if ( this.state.cancelButtonHover ) {
+            return dialogButtonStyleHover;
+        } else {
+            return dialogButtonStyle;
+        }
+    },
+
+    render: function () {
+        var deleteButtonStyle = this.getDeleteButtonStyle();
+        var cancelButtonStyle = this.getCancelButtonStyle();
+        return (
+            <div className="delete-page-modal-dialog">
+                <Modal
+                    closeTimeoutMS={0}
+                    isOpen={this.state.open}
+                    onRequestClose={this.close}
+                    shouldCloseOnOverlayClick={false}
+                    style={modalDialogStyle} >
+                    <label className="form-label">Delete <b>{this.props.page}</b> ?</label>
+                    <br/>
+
+                    <div className="dialog-button-pane">
+                        <button
+                            type="button"
+                            style={deleteButtonStyle}
+                            onClick={this.deleteAction}
+                            onMouseEnter={this.deleteButtonToggle}
+                            onMouseLeave={this.deleteButtonToggle}>
+                            Yes</button>
+                        <button
+                            type="button"
+                            style={cancelButtonStyle}
+                            onClick={this.close}
+                            onMouseEnter={this.cancelButtonToggle}
+                            onMouseLeave={this.cancelButtonToggle}>
+                            No</button>
+                        <br/>
+                    </div>
+                </Modal>
+            </div>
+        );
+    }
+});
+
 var PageFrame = React.createClass({
+
+    modalDialog: {},
 
     getInitialState: function () {
         return ({hover: false});
     },
 
-    toggleHover: function () {
-        this.setState({hover: !this.state.hover});
+    mouseEnter: function () {
+        this.setState({hover: true});
+    },
+
+    mouseLeave: function () {
+        this.setState({hover: false});
+    },
+
+    deletePageInvoked: function () {
+        this.modalDialog.askDeletePage();
+    },
+
+    pageDeleted: function (pageToDelete) {
+        this.props.performPageDelete(pageToDelete);
     },
 
     render: function () {
         return (
             <li className="page-frame"
-                onMouseEnter={this.toggleHover}
-                onMouseLeave={this.toggleHover} >
+                onMouseEnter={this.mouseEnter}
+                onMouseOver={this.mouseEnter}
+                onMouseLeave={this.mouseLeave} >
                 <a href={this.props.url} target="_blank" >
                     <PageImageFrame image="./web-globe-n.png" />
                     <PageTitle text={this.props.name} />
-                    <DeletePageButton dir={this.props.name} frameHover={this.state.hover}/>
+                    <DeletePageButton
+                        dir={this.props.name}
+                        frameHover={this.state.hover}
+                        deletePage={this.deletePageInvoked}
+                    />
+                    <DeletePageModalDialog
+                        page={this.props.name}
+                        ref={(c) => this.modalDialog = c}
+                        pageDeletedCallback={this.pageDeleted}
+                    />
                 </a>
             </li>
         );
@@ -545,6 +661,40 @@ var DirectoryBar = React.createClass({
 
 var DirectoryContent = React.createClass({
 
+    deletePageOptimistically: function (pageName) {
+        var currentPages = [];
+        var length = this.state.pages.length;
+        for (var i = 0; i < length; i++) {
+            if ( this.state.pages[i].name == pageName ) {
+                // do not push it back
+            } else {
+                currentPages.push(this.state.pages[i]);
+            }
+        }
+        var newLength = currentPages.length;
+        for (i = 0; i < newLength; i++ ) {
+            currentPages[i].order = (i + 1);
+        }
+        this.setNewState(currentPages);
+        this.ajaxDeletePage(pageName);
+    },
+
+    ajaxDeletePage: function (pageName) {
+        var thisComponent = this;
+        $.ajax({
+            method: 'DELETE',
+            url: restDispatcher.composeUrlToPage("webpanel", this.props.name, pageName),
+            processData: false,
+            cache: false,
+            success: function () {
+                thisComponent.props.reloadPanel();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
     addNewPageOptimistically: function (page) {
         var currentPages = [];
         var length = this.state.pages.length;
@@ -592,6 +742,7 @@ var DirectoryContent = React.createClass({
     },
 
     ajaxPutNewOrder: function (newOrder, movedPageName) {
+        var thisComponent = this;
         var data = {"order": newOrder};
         $.ajax({
             method: 'PUT',
@@ -640,15 +791,21 @@ var DirectoryContent = React.createClass({
 
         this.ajaxGetPages();
 
-        //setInterval(this.ajaxGetPages, (1000*60));
+        setInterval(this.ajaxGetPages, (1000*60));
     },
 
     render: function () {
         //console.log('  [render] dir > '+ this.props.name);
+        var thisComponent = this;
         var renderedPages = this.state.pages.map( function(page) {
             //console.log('    [render] frame > ' + page.name + ", " + page.order);
             return (
-                <PageFrame name={page.name} url={page.url} key={page.order} />
+                <PageFrame
+                    name={page.name}
+                    url={page.url}
+                    key={page.order}
+                    performPageDelete={thisComponent.deletePageOptimistically}
+                />
             );
         });
         return (
@@ -666,7 +823,10 @@ var DirectoryContentWrapper = React.createClass({
 
     addNewPageOptimistically: function (page) {
         this.dirContent.addNewPageOptimistically(page);
-        console.log("DirectoryWrapper::addNewPage");
+    },
+
+    reloadPanel: function () {
+        this.props.reloadPanel();
     },
 
     render: function () {
@@ -675,6 +835,7 @@ var DirectoryContentWrapper = React.createClass({
                 <DirectoryContent
                     name={this.props.name}
                     pages={this.props.pages}
+                    reloadPanel={this.reloadPanel}
                     ref={(c) => this.dirContent = c} />
             </div>
         );
@@ -687,7 +848,6 @@ var Directory = React.createClass({
 
     addNewPageOptimistically: function (page) {
         this.directoryWrapper.addNewPageOptimistically(page);
-        console.log("Directory::addNewPage");
     },
 
     reloadPanel: function () {
@@ -705,6 +865,7 @@ var Directory = React.createClass({
                 <DirectoryContentWrapper
                     name={this.props.name}
                     pages={this.props.pages}
+                    reloadPanel={this.reloadPanel}
                     ref={(c) => this.directoryWrapper = c} />
                 <br />
             </div>
@@ -783,18 +944,18 @@ var WebPanelContent = React.createClass({
 
         this.ajaxGetDirectories();
 
-        //setInterval(this.ajaxGetDirectories, (1000*60));
+        setInterval(this.ajaxGetDirectories, (1000*60));
     },
 
     reloadPanel: function () {
         this.ajaxGetDirectories();
-        console.log('WebPanelContent::reload()')
+        //console.log('WebPanelContent::reload()')
     },
 
     render: function () {
         var panelComponent = this;
         var renderedDirs = this.state.dirs.map(function(dir) {
-            console.log('[render] panel > ' + dir.name);
+            //console.log('[render] panel > ' + dir.name);
             return (
                 <Directory
                     name={dir.name}
