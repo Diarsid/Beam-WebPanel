@@ -539,6 +539,17 @@ var DirectoryBar = React.createClass({
 
 var DirectoryContent = React.createClass({
 
+    addNewPageOptimistically: function (page) {
+        var currentPages = [];
+        var length = this.state.pages.length;
+        for (var i = 0; i < length; i++) {
+            currentPages.push(this.state.pages[i]);
+        }
+        page.order = currentPages.length + 2;
+        currentPages.push(page);
+        this.setNewState(currentPages);
+    },
+
     getInitialState: function () {
         return {pages: this.props.pages};
     },
@@ -645,10 +656,20 @@ var DirectoryContent = React.createClass({
 
 var DirectoryContentWrapper = React.createClass({
 
+    dirContent: {},
+
+    addNewPageOptimistically: function (page) {
+        this.dirContent.addNewPageOptimistically(page);
+        console.log("DirectoryWrapper::addNewPage");
+    },
+
     render: function () {
         return (
             <div className="directory-content-wrapper">
-                <DirectoryContent name={this.props.name} pages={this.props.pages} />
+                <DirectoryContent
+                    name={this.props.name}
+                    pages={this.props.pages}
+                    ref={(c) => this.dirContent = c} />
             </div>
         );
     }
@@ -656,7 +677,10 @@ var DirectoryContentWrapper = React.createClass({
 
 var Directory = React.createClass({
 
+    directoryWrapper: {},
+
     addNewPageOptimistically: function (page) {
+        this.directoryWrapper.addNewPageOptimistically(page);
         console.log("Directory::addNewPage");
     },
 
@@ -665,14 +689,17 @@ var Directory = React.createClass({
             <div className="directory" >
                 <DirectoryBar
                     dirName={this.props.name}
-                    addNewPageOptimistically={this.addNewPageOptimistically}/>
-                <DirectoryContentWrapper name={this.props.name} pages={this.props.pages} />
+                    addNewPageOptimistically={this.addNewPageOptimistically}
+                />
+                <DirectoryContentWrapper
+                    name={this.props.name}
+                    pages={this.props.pages}
+                    ref={(c) => this.directoryWrapper = c} />
                 <br />
             </div>
         );
     }
 });
-
 
 var WebPanelContent = React.createClass({
 

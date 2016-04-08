@@ -46225,6 +46225,17 @@ var DirectoryContent = React.createClass({
     displayName: 'DirectoryContent',
 
 
+    addNewPageOptimistically: function (page) {
+        var currentPages = [];
+        var length = this.state.pages.length;
+        for (var i = 0; i < length; i++) {
+            currentPages.push(this.state.pages[i]);
+        }
+        page.order = currentPages.length + 2;
+        currentPages.push(page);
+        this.setNewState(currentPages);
+    },
+
     getInitialState: function () {
         return { pages: this.props.pages };
     },
@@ -46331,11 +46342,21 @@ var DirectoryContentWrapper = React.createClass({
     displayName: 'DirectoryContentWrapper',
 
 
+    dirContent: {},
+
+    addNewPageOptimistically: function (page) {
+        this.dirContent.addNewPageOptimistically(page);
+        console.log("DirectoryWrapper::addNewPage");
+    },
+
     render: function () {
         return React.createElement(
             'div',
             { className: 'directory-content-wrapper' },
-            React.createElement(DirectoryContent, { name: this.props.name, pages: this.props.pages })
+            React.createElement(DirectoryContent, {
+                name: this.props.name,
+                pages: this.props.pages,
+                ref: c => this.dirContent = c })
         );
     }
 });
@@ -46344,7 +46365,10 @@ var Directory = React.createClass({
     displayName: 'Directory',
 
 
+    directoryWrapper: {},
+
     addNewPageOptimistically: function (page) {
+        this.directoryWrapper.addNewPageOptimistically(page);
         console.log("Directory::addNewPage");
     },
 
@@ -46354,8 +46378,12 @@ var Directory = React.createClass({
             { className: 'directory' },
             React.createElement(DirectoryBar, {
                 dirName: this.props.name,
-                addNewPageOptimistically: this.addNewPageOptimistically }),
-            React.createElement(DirectoryContentWrapper, { name: this.props.name, pages: this.props.pages }),
+                addNewPageOptimistically: this.addNewPageOptimistically
+            }),
+            React.createElement(DirectoryContentWrapper, {
+                name: this.props.name,
+                pages: this.props.pages,
+                ref: c => this.directoryWrapper = c }),
             React.createElement('br', null)
         );
     }
