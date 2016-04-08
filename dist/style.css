@@ -1,0 +1,275 @@
+
+
+
+body {
+    background-image: url("http://localhost:8484/local_accesible/images/wild_paintings.jpg");
+    padding: 0;
+    margin: 0;
+    height:100%;
+}
+
+div {
+    padding: 0;
+    margin: 0;
+}
+
+br {
+    clear:both;
+}
+
+*:focus {
+    outline: none;
+}
+
+a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+    color: black;
+}
+
+.directory-bar {
+    box-sizing: border-box;
+    height: 32px;
+    border: 1px solid darkgray;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -webkit-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -o-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    margin: 0;
+    padding: 4px 4px 4px 4px;
+}
+
+.directory-bar-title {
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+    margin: 0 0 0 30px;
+}
+
+.directory-bar-button {
+    border-radius: 6px;
+    height: 22px;
+    width: 22px;
+    border: 1px solid lightgrey;
+    box-sizing: border-box;
+    opacity: 0.85;
+    background-color: #fafafa;
+    box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -webkit-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -o-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    margin: 0 4px 0 0;
+}
+
+.directory-bar-button:hover {
+    opacity: 1;
+    background: white;
+    box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -webkit-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -moz-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -o-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+}
+
+.create-page-modal-dialog-controller,
+.rename-dir-modal-dialog-controller {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    margin: 0 4px 0 0;
+    padding: 0 0 0 0;
+}
+
+legend {
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+form.create-page-dialog {
+    margin: 0 0 0 0;
+}
+
+label.form-label {
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+}
+
+.form-input {
+    width: 330px;
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+    box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -webkit-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -o-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    padding: 4px 0 4px 8px;
+    margin-bottom: 12px;
+    margin-top: 4px;
+}
+
+input[type=text] {
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+}
+
+fieldset {
+    display: block;
+    border: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.dialog-button-pane {
+    margin: 20px 0 0 0;
+    padding: 0 0 0 0;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: lightgrey;
+    font-family: Verdana;
+    font-size: 15px;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: lightgrey;
+    opacity: 1;
+    font-family: Verdana;
+    font-size: 15px;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: lightgrey;
+    opacity: 1;
+    font-family: Verdana;
+    font-size: 15px;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: lightgrey;
+    font-family: Verdana;
+    font-size: 15px;
+}
+
+.page-frame {
+    opacity: 0.9;
+    box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -webkit-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -o-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    border: 1px solid darkgray;
+    border-radius: 5px;
+    background-color: #fafafa;
+    height: 120px;
+    width: 120px;
+    float: left;
+    padding: 0;
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+    margin-left: 1.4vw;
+    margin-right: 1.4vw;
+}
+
+.page-frame:hover {
+    opacity: 1;
+    box-shadow: 0px 0px 10px 0px lightgrey, inset 0px 0px 5px 0px lightgrey;
+    -webkit-box-shadow: 0px 0px 10px 0px lightgrey, inset 0px 0px 5px 0px lightgrey;
+    -moz-box-shadow: 0px 0px 10px 0px lightgrey, inset 0px 0px 5px 0px lightgrey;
+    -o-box-shadow: 0px 0px 10px 0px lightgrey, inset 0px 0px 5px 0px lightgrey;
+}
+
+.delete-page-button {
+    position: relative;
+    top: -130px;
+    right: -104px;
+    border-radius: 6px;
+    height: 25px;
+    width: 25px;
+    border: 1px solid lightgrey;
+    box-sizing: border-box;
+    opacity: 0.85;
+    background-color: #fafafa;
+    box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -webkit-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    -o-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    margin: 0 0 0 0;
+}
+
+.delete-page-button:hover {
+    opacity: 1;
+    background: pink;
+    box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -webkit-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -moz-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -o-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+}
+
+.page-image-frame {
+    box-sizing: border-box;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    height: 90px;
+    width: 120px;
+    padding: 5px;
+}
+
+.page-image {
+    border-radius: 3px;
+    height: 80px;
+    width: 110px;
+}
+
+.page-title {
+    margin: 0;
+    border-top: 1px solid lightgrey;
+    height: 30px;
+    width: 120px;
+}
+
+.title-text {
+    color: #1C1C1C;
+    font-family: Verdana;
+    font-size: 15px;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    box-sizing: border-box;
+    padding-top: 0.2em;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.directory {
+    background-color: rgba(0, 0, 0, 0.3);
+    margin: 1vw 2vw 1vw 2vw;
+    border-radius: 10px;
+}
+
+ul.directory-content {
+    list-style-type: none;
+    width: 85vw;
+    margin: 0;
+    padding: 0;
+}
+
+.directory-content-wrapper {
+    padding-left: 4.5vw;
+    padding-right: 4.5vw;
+}
+
+.web-panel-content {
+    margin: 0 0 0 0;
+    padding: 0;
+}
+
+.top-bar {
+    background-color: darkgray;
+    margin: 0 0 0 0;
+    padding: 0;
+}
