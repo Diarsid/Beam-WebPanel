@@ -47574,18 +47574,6 @@ function reorderItems(currentItems, oldOrder, newOrder) {
     return orderedItems;
 }
 
-function reorderItemsLight(items, oldOrder, newOrder) {
-    console.log('current items: ');
-    console.log(items);
-    var length = items.length;
-    for (var i = 0; i < length; i++) {
-        items[i].order = i + 1;
-    }
-    console.log('reordered items: ');
-    console.log(items);
-    return items;
-}
-
 var validNameRegexp = "[a-zA-Z0-9-_\\.>\\s]+";
 
 function isWebNameValid(name) {
@@ -47593,15 +47581,11 @@ function isWebNameValid(name) {
     return true;
 }
 
-var TopBar = React.createClass({
-    displayName: 'TopBar',
+var Bar = React.createClass({
+    displayName: 'Bar',
 
     render: function () {
-        return React.createElement(
-            'div',
-            { className: 'top-bar' },
-            'WebPanel bar'
-        );
+        return React.createElement('div', { className: 'bar' });
     }
 });
 
@@ -47772,15 +47756,26 @@ var PageFrame = React.createClass({
     modalDialog: {},
 
     getInitialState: function () {
-        return { hover: false };
+        return {
+            hover: false,
+            framestyle: {}
+        };
     },
 
     mouseEnter: function () {
         this.setState({ hover: true });
+        // set style to opacity: 1 as a duplicate of external :hover part.
+        // this duplicate is necessary because a jQuery UI Sortable
+        // widget sets style of dropped element to Sortable default opacity:1.
+        // That's why it is needed to do a manual transition between opacity 1 and 0.9
+        this.setState({ framestyle: { opacity: '1' } });
     },
 
     mouseLeave: function () {
         this.setState({ hover: false });
+        // css trick to revert a jQuery forced style {opacity: 1}
+        // that is always set on element that have been jus dropped
+        this.setState({ framestyle: { opacity: '0.9' } });
     },
 
     deletePageInvoked: function () {
@@ -47794,7 +47789,7 @@ var PageFrame = React.createClass({
     render: function () {
         return React.createElement(
             'li',
-            { className: 'page-frame',
+            { className: 'page-frame', style: this.state.framestyle,
                 onMouseEnter: this.mouseEnter,
                 onMouseOver: this.mouseEnter,
                 onMouseLeave: this.mouseLeave },
@@ -48517,6 +48512,18 @@ var WebPanelContent = React.createClass({
 
 });
 
+var WebPanel = React.createClass({
+    displayName: 'WebPanel',
+
+    render: function () {
+        return React.createElement(
+            'div',
+            { className: 'web-panel' },
+            React.createElement(WebPanelContent, null)
+        );
+    }
+});
+
 var BeamPage = React.createClass({
     displayName: 'BeamPage',
 
@@ -48524,8 +48531,8 @@ var BeamPage = React.createClass({
         return React.createElement(
             'div',
             null,
-            React.createElement(TopBar, null),
-            React.createElement(WebPanelContent, null)
+            React.createElement(Bar, null),
+            React.createElement(WebPanel, null)
         );
     }
 });

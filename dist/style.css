@@ -264,8 +264,20 @@ ul.directory-content {
     padding: 0;
 }
 
-.top-bar {
+.web-panel {
+    position: relative;
+    left: 40px;
+    width: calc(100vw - 40px);
+    margin: 0 0 0 0;
+    padding: 0;
+}
+
+.bar {
+    position: fixed;
+    top: -2vh;
     background-color: darkgray;
+    width: 40px;
+    height: 105vh;
     margin: 0 0 0 0;
     padding: 0;
 }
