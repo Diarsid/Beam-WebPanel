@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
+var cloneDeep = require('lodash.clonedeep');
 var $ = require('jquery');
 require('jquery-ui');
 
@@ -105,9 +106,14 @@ var restDispatcher = {
 };
 
 function reorderItems (currentItems, oldOrder, newOrder) {
+    console.log("old order" + oldOrder);
+    console.log('new order' + newOrder);
     var orderedItems = [];
     var length = currentItems.length;
-    var movedItems = currentItems[oldOrder-1];
+    var movedItem = currentItems[oldOrder-1];
+    console.log('moved item: ');
+    console.log(movedItem);
+
     var i = 0;
     if ( oldOrder == newOrder ) {
         orderedItems = orderedItems.concat(currentItems);
@@ -118,7 +124,7 @@ function reorderItems (currentItems, oldOrder, newOrder) {
         for (i = oldOrder-1; i < newOrder-1; i++) {
             orderedItems.push(currentItems[i+1]);
         }
-        orderedItems.push(movedItems);
+        orderedItems.push(movedItem);
         for (i = newOrder; i < length; i++) {
             orderedItems.push(currentItems[i]);
         }
@@ -127,7 +133,7 @@ function reorderItems (currentItems, oldOrder, newOrder) {
         for (i = 0; i < newOrder-1; i++) {
             orderedItems.push(currentItems[i]);
         }
-        orderedItems.push(movedItems);
+        orderedItems.push(movedItem);
         for (i = newOrder-1; i < oldOrder-1; i++) {
             orderedItems.push(currentItems[i]);
         }
@@ -135,12 +141,25 @@ function reorderItems (currentItems, oldOrder, newOrder) {
             orderedItems.push(currentItems[i]);
         }
     }
-
     for (i = 0; i < length; i++) {
         orderedItems[i].order = i+1;
     }
+    console.log('ordered items');
+    console.log(orderedItems);
 
     return orderedItems;
+}
+
+function reorderItemsLight (items, oldOrder, newOrder) {
+    console.log('current items: ');
+    console.log(items);
+    var length = items.length;
+    for (var i = 0; i < length; i++) {
+        items[i].order = i + 1;
+    }
+    console.log('reordered items: ');
+    console.log(items);
+    return items;
 }
 
 var validNameRegexp = "[a-zA-Z0-9-_\\.>\\s]+";
@@ -750,23 +769,27 @@ var DirectoryContent = React.createClass({
             processData: false,
             data: JSON.stringify(data),
             cache: false,
+            success: function() {
+                thisComponent.ajaxGetPages();
+            }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.url, status, err.toString());
             }.bind(this)
         });
     },
 
-    setNewState: function (newPages) {
-        this.setState({pages: newPages});
-    },
-
-    getCurrentState: function () {
-        return this.state.pages;
+    reorderPages: function (oldOrder, newOrder) {
+        console.log('state:')
+        console.log(this.state.pages);
+        var pagesCopy = cloneDeep(this.state.pages);
+        var reorderedPages = reorderItems(pagesCopy, oldOrder, newOrder);
+        this.setState({pages: reorderedPages});
     },
 
     componentDidMount: function () {
         var dirContentNode = $(ReactDOM.findDOMNode(this));
         var thisComponent = this;
+        var oldPages = [];
         dirContentNode.sortable({
             items: '.page-frame',
             opacity: 0.5,
@@ -778,13 +801,8 @@ var DirectoryContent = React.createClass({
                 var newOrder = ui.item.index() + 1;
                 var oldOrder = ui.item.oldOrder + 1;
                 var movedPageName = ui.item.context.textContent;
-                dirContentNode.sortable( "refreshPositions" );
-                dirContentNode.sortable("cancel");
-                var sortedPages = [];
-                var currentPages = [];
-                currentPages = thisComponent.getCurrentState();
-                sortedPages = reorderItems(currentPages, oldOrder, newOrder);
-                thisComponent.setNewState(sortedPages);
+                dirContentNode.sortable('cancel');
+                thisComponent.reorderPages(oldOrder, newOrder);
                 thisComponent.ajaxPutNewOrder(newOrder, movedPageName);
             }
         }).disableSelection();
@@ -803,7 +821,7 @@ var DirectoryContent = React.createClass({
                 <PageFrame
                     name={page.name}
                     url={page.url}
-                    key={page.order}
+                    key={page.name}
                     performPageDelete={thisComponent.deletePageOptimistically}
                 />
             );
@@ -901,6 +919,9 @@ var WebPanelContent = React.createClass({
             processData: false,
             data: JSON.stringify(data),
             cache: false,
+            success: function( obtainedDirs ) {
+                this.ajaxGetDirectories();
+            }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.url, status, err.toString());
             }.bind(this)
@@ -913,6 +934,14 @@ var WebPanelContent = React.createClass({
 
     setNewState: function ( newDirs ) {
         this.setState({ dirs: newDirs });
+    },
+
+    reorderDirs: function ( oldOrder, newOrder ) {
+        //console.log('state:')
+        //console.log(this.state.dirs);
+        var dirsCopy = cloneDeep(this.state.dirs);
+        var reorderedDirs = reorderItems(dirsCopy, oldOrder, newOrder);
+        this.setState({dirs: reorderedDirs});
     },
 
     componentDidMount: function () {
@@ -929,15 +958,9 @@ var WebPanelContent = React.createClass({
                 var newOrder = ui.item.index();
                 var oldOrder = ui.item.oldOrder;
                 var movedDirName = ui.item.find('.directory-bar')[0].textContent;
-                webPanelNode.sortable( "refreshPositions" );
-                webPanelNode.sortable("cancel");
-                var sortedDirs = [];
-                var currentDirs = [];
-                currentDirs = thisComponent.getCurrentState();
-                sortedDirs = reorderItems(currentDirs, oldOrder, newOrder);
-                thisComponent.setNewState(sortedDirs);
+                webPanelNode.sortable('cancel');
+                thisComponent.reorderDirs(oldOrder, newOrder);
                 thisComponent.ajaxPutNewOrder(newOrder, movedDirName);
-
             }
 
         }).disableSelection();
