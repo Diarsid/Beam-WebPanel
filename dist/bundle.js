@@ -47492,6 +47492,24 @@ var dialogButtonStyle = {
     margin: '0 15px 0 0'
 };
 
+var dialogForbiddenButtonStyle = {
+    color: '#D5D5D5',
+    height: '30px',
+    width: '90px',
+    boxSizing: 'border-box',
+    opacity: '0.85',
+    fontFamily: 'Verdana',
+    fontSize: '15px',
+    borderRadius: '6px',
+    border: '1px solid lightgrey',
+    backgroundColor: '#fafafa',
+    boxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    WebkitBoxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    MozBoxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    OBoxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    margin: '0 15px 0 0'
+};
+
 var dialogButtonStyleHover = {
     color: '#1C1C1C',
     height: '30px',
@@ -47508,6 +47526,22 @@ var dialogButtonStyleHover = {
     MozBoxShadow: '0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey',
     OBoxShadow: '0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey',
     margin: '0 15px 0 0'
+};
+
+var invalidInputStyle = {
+    backgroundColor: '#FFF8F6',
+    boxShadow: 'inset 0px 0px 5px 0px #FFD7CE',
+    WebkitBoxShadow: 'inset 0px 0px 5px 0px #FFD7CE ',
+    MozBoxShadow: 'inset 0px 0px 5px 0px #FFD7CE ',
+    OBoxShadow: 'inset 0px 0px 5px 0px #FFD7CE '
+};
+
+var validInputStyle = {
+    backgroundColor: 'white',
+    boxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    WebkitBoxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    MozBoxShadow: 'inset 0px 0px 5px 0px lightgrey',
+    OBoxShadow: 'inset 0px 0px 5px 0px lightgrey'
 };
 
 var restDispatcher = {
@@ -47574,11 +47608,8 @@ function reorderItems(currentItems, oldOrder, newOrder) {
     return orderedItems;
 }
 
-var validNameRegexp = "[a-zA-Z0-9-_\\.>\\s]+";
-
 function isWebNameValid(name) {
-    // TODO validate given name with validNameRegexp
-    return true;
+    return new RegExp("^[a-zA-Z0-9-_\\.>\\s]+$").test(name);
 }
 
 var Bar = React.createClass({
@@ -47821,6 +47852,7 @@ var CreatePageModalDialogController = React.createClass({
         return {
             open: false,
             page: "",
+            pageNameValid: false,
             url: "",
             createButtonHover: false,
             cancelButtonHover: false
@@ -47835,6 +47867,7 @@ var CreatePageModalDialogController = React.createClass({
         this.setState({
             open: false,
             page: "",
+            pageNameValid: false,
             url: "",
             createButtonHover: false,
             cancelButtonHover: false
@@ -47848,7 +47881,17 @@ var CreatePageModalDialogController = React.createClass({
     },
 
     pageNameChanged: function (e) {
-        this.setState({ page: e.target.value });
+        if (isWebNameValid(e.target.value)) {
+            this.setState({
+                page: e.target.value,
+                pageNameValid: true
+            });
+        } else {
+            this.setState({
+                page: e.target.value,
+                pageNameValid: false
+            });
+        }
     },
 
     pageUrlChanged: function (e) {
@@ -47856,7 +47899,7 @@ var CreatePageModalDialogController = React.createClass({
     },
 
     createAction: function () {
-        if (!isWebNameValid(this.state.page)) {
+        if (!this.state.pageNameValid || this.state.url.length < 1) {
             return;
         }
         var data = {
@@ -47890,10 +47933,14 @@ var CreatePageModalDialogController = React.createClass({
     },
 
     getCreateButtonStyle: function () {
-        if (this.state.createButtonHover) {
-            return dialogButtonStyleHover;
+        if (this.state.pageNameValid && this.state.url.length > 0) {
+            if (this.state.createButtonHover) {
+                return dialogButtonStyleHover;
+            } else {
+                return dialogButtonStyle;
+            }
         } else {
-            return dialogButtonStyle;
+            return dialogForbiddenButtonStyle;
         }
     },
 
@@ -47905,9 +47952,27 @@ var CreatePageModalDialogController = React.createClass({
         }
     },
 
+    getNameInputStyle: function () {
+        if (this.state.pageNameValid) {
+            return validInputStyle;
+        } else {
+            return invalidInputStyle;
+        }
+    },
+
+    getUrlInputStyle: function () {
+        if (this.state.url.length > 0) {
+            return validInputStyle;
+        } else {
+            return invalidInputStyle;
+        }
+    },
+
     render: function () {
         var createButtonStyle = this.getCreateButtonStyle();
         var cancelButtonStyle = this.getCancelButtonStyle();
+        var nameInputStyle = this.getNameInputStyle();
+        var urlInputStyle = this.getUrlInputStyle();
         return React.createElement(
             'span',
             { className: 'create-page-modal-dialog-controller' },
@@ -47945,6 +48010,7 @@ var CreatePageModalDialogController = React.createClass({
                             id: 'page-name',
                             placeholder: 'name...',
                             className: 'form-input',
+                            style: nameInputStyle,
                             value: this.state.name,
                             onChange: this.pageNameChanged }),
                         React.createElement('br', null),
@@ -47958,6 +48024,7 @@ var CreatePageModalDialogController = React.createClass({
                             id: 'page-url',
                             placeholder: 'http://...',
                             className: 'form-input',
+                            style: urlInputStyle,
                             value: this.state.url,
                             onChange: this.pageUrlChanged })
                     )
@@ -48000,6 +48067,7 @@ var RenameDirModalDialogController = React.createClass({
         return {
             open: false,
             newName: "",
+            nameValid: false,
             editButtonHover: false,
             cancelButtonHover: false
         };
@@ -48013,6 +48081,7 @@ var RenameDirModalDialogController = React.createClass({
         this.setState({
             open: false,
             newName: "",
+            nameValid: false,
             editButtonHover: false,
             cancelButtonHover: false
         });
@@ -48025,13 +48094,22 @@ var RenameDirModalDialogController = React.createClass({
     },
 
     dirNameChanged: function (e) {
-        this.setState({ newName: e.target.value });
+        if (isWebNameValid(e.target.value)) {
+            this.setState({
+                newName: e.target.value,
+                nameValid: true
+            });
+        } else {
+            this.setState({
+                newName: e.target.value,
+                nameValid: false
+            });
+        }
     },
 
     editAction: function () {
         var thisComponent = this;
-        console.log('RenameDirectoryController::editAction() > ' + this.state.newName);
-        if (!isWebNameValid(this.state.newName)) {
+        if (!this.state.nameValid) {
             return;
         }
         var data = {
@@ -48063,10 +48141,14 @@ var RenameDirModalDialogController = React.createClass({
     },
 
     getEditButtonStyle: function () {
-        if (this.state.editButtonHover) {
-            return dialogButtonStyleHover;
+        if (this.state.nameValid) {
+            if (this.state.editButtonHover) {
+                return dialogButtonStyleHover;
+            } else {
+                return dialogButtonStyle;
+            }
         } else {
-            return dialogButtonStyle;
+            return dialogForbiddenButtonStyle;
         }
     },
 
@@ -48078,9 +48160,18 @@ var RenameDirModalDialogController = React.createClass({
         }
     },
 
+    getInputStyle: function () {
+        if (this.state.nameValid) {
+            return validInputStyle;
+        } else {
+            return invalidInputStyle;
+        }
+    },
+
     render: function () {
         var editButtonStyle = this.getEditButtonStyle();
         var cancelButtonStyle = this.getCancelButtonStyle();
+        var editInputStyle = this.getInputStyle();
         return React.createElement(
             'span',
             { className: 'rename-dir-modal-dialog-controller' },
@@ -48111,6 +48202,7 @@ var RenameDirModalDialogController = React.createClass({
                     id: 'new-dir-name',
                     placeholder: 'name...',
                     className: 'form-input',
+                    style: editInputStyle,
                     value: this.state.newName,
                     onChange: this.dirNameChanged }),
                 React.createElement('br', null),
@@ -48189,21 +48281,22 @@ var DirectoryContent = React.createClass({
 
 
     deletePageOptimistically: function (pageName) {
-        var currentPages = [];
-        var length = this.state.pages.length;
+        var currentPages = cloneDeep(this.state.pages);
+        var newPages = [];
+        var length = currentPages.length;
+        var newOrderCounter = 1;
         for (var i = 0; i < length; i++) {
-            if (this.state.pages[i].name == pageName) {
+            if (currentPages[i].name == pageName) {
                 // do not push it back
             } else {
-                    currentPages.push(this.state.pages[i]);
+                    currentPages[i].order = newOrderCounter;
+                    newOrderCounter++;
+                    newPages.push(currentPages[i]);
                 }
         }
-        var newLength = currentPages.length;
-        for (i = 0; i < newLength; i++) {
-            currentPages[i].order = i + 1;
-        }
-        this.setNewState(currentPages);
+        this.setState({ pages: newPages });
         this.ajaxDeletePage(pageName);
+        console.log(newPages);
     },
 
     ajaxDeletePage: function (pageName) {
@@ -48223,14 +48316,11 @@ var DirectoryContent = React.createClass({
     },
 
     addNewPageOptimistically: function (page) {
-        var currentPages = [];
-        var length = this.state.pages.length;
-        for (var i = 0; i < length; i++) {
-            currentPages.push(this.state.pages[i]);
-        }
-        page.order = currentPages.length + 2;
+        var currentPages = cloneDeep(this.state.pages);
+        page.order = currentPages.length + 1;
         currentPages.push(page);
-        this.setNewState(currentPages);
+        this.setState({ pages: currentPages });
+        console.log(currentPages);
     },
 
     getInitialState: function () {
@@ -48467,8 +48557,8 @@ var WebPanelContent = React.createClass({
                 ui.item.oldOrder = ui.item.index();
             },
             update: function (event, ui) {
-                var newOrder = ui.item.index();
-                var oldOrder = ui.item.oldOrder;
+                var newOrder = ui.item.index() + 1;
+                var oldOrder = ui.item.oldOrder + 1;
                 var movedDirName = ui.item.find('.directory-bar')[0].textContent;
                 webPanelNode.sortable('cancel');
                 thisComponent.reorderDirs(oldOrder, newOrder);
@@ -48501,11 +48591,6 @@ var WebPanelContent = React.createClass({
         return React.createElement(
             'div',
             { className: 'web-panel-content' },
-            React.createElement(
-                'div',
-                null,
-                'Web Panel'
-            ),
             renderedDirs
         );
     }
