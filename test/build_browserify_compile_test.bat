@@ -1,1 +1,0 @@
-browserify -t [ babelify --presets [ react ] ] ./src-test/main-test.js -o ./dist-test/bundle-test.js -v

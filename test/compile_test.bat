@@ -1,1 +1,0 @@
-cmd /k build_browserify_compile_test
