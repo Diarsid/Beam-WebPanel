@@ -1,49 +1,30 @@
 
 var restDispatcher = {
+
     coreUrl: "http://localhost:35001/beam/core/resources/",
+
     composeUrlToAllDirectoriesInPlacement: function (placement) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs");
+        return this.coreUrl+placement+"/dirs";
     },
+
     composeUrlToDirectory: function (placement, dirName) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs/")
-            .concat(dirName.toString());
+        return this.coreUrl+placement+"/dirs/"+dirName;
     },
+
     composeUrlToDirectoryField: function (placement, dirName, fieldName) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs/")
-            .concat(dirName.toString())
-            .concat("/")
-            .concat(fieldName.toString());
+        return this.coreUrl+placement+"/dirs/"+dirName+"/"+fieldName;
     },
+
     composeUrlToAllPagesInDirectory: function (placement, dirName) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs/")
-            .concat(dirName.toString())
-            .concat("/pages");
+        return this.coreUrl+placement+"/dirs/"+dirName+"/pages";
     },
+
     composeUrlToPage: function (placement, dirName, pageName) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs/")
-            .concat(dirName.toString())
-            .concat("/pages/")
-            .concat(pageName.toString());
+        return this.coreUrl+placement+"/dirs/"+dirName+"/pages/"+pageName;
     },
+
     composeUrlToPageField: function (placement, dirName, pageName, fieldName) {
-        return this.coreUrl
-            .concat(placement.toString())
-            .concat("/dirs/")
-            .concat(dirName.toString())
-            .concat("/pages/")
-            .concat(pageName.toString())
-            .concat("/")
-            .concat(fieldName.toString());
+        return this.coreUrl+placement+"/dirs/"+dirName+"/pages/"+pageName+"/"+fieldName;
     }
 };
 

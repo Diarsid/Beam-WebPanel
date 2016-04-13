@@ -11,18 +11,20 @@ var styles =            require('./styles');
 
 // React components
 var DeletePageModalDialog =                 require('./dialogs/delete-page-dialog.js');
-var CreateDirectoryModalDialogController =  require('./dialog-controllers/create-directory-controller.js');
+var CreateDirModalDialogController =  require('./dialog-controllers/create-directory-controller.js');
 var DeleteDirModalDialogController =        require('./dialog-controllers/delete-directory-controller.js');
 var RenameDirModalDialogController =        require('./dialog-controllers/rename-directory-controller.js');
 var CreatePageModalDialogController =       require('./dialog-controllers/create-page-controller.js');
 
 // Main React components
 var Bar = React.createClass({
+
     render: function () {
         return (
             <div className="bar">
                 <div className="bar-panel">
-
+                    <CreateDirModalDialogController
+                        directoryCreated={this.props.directoryCreated} />
                 </div>
             </div>
         );
@@ -219,23 +221,48 @@ var DirectoryContent = React.createClass({
     },
 
     getInitialState: function () {
-        return {pages: this.props.pages};
+        return {
+            pages: this.props.pages,
+            intervalReloading: {}
+        };
+    },
+
+    propsAreNotEqual: function (oldProps, nextProps) {
+        if ( oldProps.name != nextProps.name ) {
+            console.log('props are different: dir names are not equal');
+            return true;
+        }
+        if ( oldProps.pages.length != nextProps.pages.length ) {
+            console.log('props are different: page arrays lengths are not equal');
+            return true;
+        }
+        var length = oldProps.pages.length;
+        for (var i = 0; i < length; i++) {
+            if (oldProps.pages[i].name != nextProps.pages[i].name) {
+                console.log('props are different: page name in array is not equal');
+                return true;
+            }
+        }
+        return false;
     },
 
     componentWillReceiveProps: function ( nextProps ) {
         this.setState({pages: nextProps.pages});
-        $.ajax({
-            method: 'GET',
-            url: restDispatcher.composeUrlToAllPagesInDirectory("webpanel", nextProps.name),
-            dataType: 'json',
-            cache: false,
-            success: function(responsePages) {
-                this.setState({pages: responsePages});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.url, status, err.toString());
-            }.bind(this)
-        });
+        if ( this.propsAreNotEqual(this.props, nextProps) ) {
+            console.log('Directory should update its pages -> props are not equal');
+            $.ajax({
+                method: 'GET',
+                url: restDispatcher.composeUrlToAllPagesInDirectory("webpanel", nextProps.name),
+                dataType: 'json',
+                cache: false,
+                success: function(responsePages) {
+                    this.setState({pages: responsePages});
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error(this.url, status, err.toString());
+                }.bind(this)
+            });
+        }
     },
 
     ajaxGetPages: function () {
@@ -300,9 +327,13 @@ var DirectoryContent = React.createClass({
             }
         }).disableSelection();
 
-        this.ajaxGetPages();
+        var interval = setInterval(this.ajaxGetPages, (1000*60));
+        this.setState({intervalReloading: interval});
+    },
 
-        setInterval(this.ajaxGetPages, (1000*60));
+    componentWillUnmount: function () {
+        clearInterval(this.state.intervalReloading);
+        console.log('DirectoryContent::UNMOUNT > ' + this.props.name);
     },
 
     render: function () {
@@ -392,7 +423,10 @@ var Directory = React.createClass({
 var WebPanelContent = React.createClass({
 
     getInitialState: function () {
-        return {dirs: []};
+        return {
+            dirs: [],
+            intervalReloading: {}
+        };
     },
 
     ajaxGetDirectories: function () {
@@ -402,20 +436,6 @@ var WebPanelContent = React.createClass({
             cache: false,
             success: function( obtainedDirs ) {
                 this.setState({dirs: obtainedDirs });
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.url, status, err.toString());
-            }.bind(this)
-        });
-    },
-
-    ajaxDeleteDir: function (dirToDelete) {
-        $.ajax({
-            method: 'DELETE',
-            url: restDispatcher.composeUrlToDirectory('webpanel', dirToDelete),
-            cache: false,
-            success: function() {
-                this.ajaxGetDirectories();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.url, status, err.toString());
@@ -479,12 +499,31 @@ var WebPanelContent = React.createClass({
 
         this.ajaxGetDirectories();
 
-        setInterval(this.ajaxGetDirectories, (1000*60));
+        var interval = setInterval(this.ajaxGetDirectories, (1000*60));
+        this.setState({intervalReloading: interval});
+    },
+
+    componentWillUnmount: function () {
+        clearInterval(this.state.intervalReloading);
     },
 
     reloadPanel: function () {
         this.ajaxGetDirectories();
         //console.log('WebPanelContent::reload()')
+    },
+
+    addNewDirOptimistically: function (newDirName) {
+        var currentDirs = cloneDeep(this.state.dirs);
+        var newOrder = currentDirs.length + 1;
+        var newDirPages = [];
+        currentDirs.push({
+            name: newDirName,
+            order: newOrder,
+            pages: newDirPages
+        });
+        this.setState({dirs: currentDirs});
+        console.log('dirs after add new dir:');
+        console.log(currentDirs);
     },
 
     deleteDirOptimistically: function (dirToDelete ) {
@@ -502,7 +541,7 @@ var WebPanelContent = React.createClass({
             }
         }
         this.setState({dirs: newDirs});
-        this.ajaxDeleteDir(dirToDelete);
+        this.ajaxGetDirectories();
         console.log(newDirs);
     },
 
@@ -529,21 +568,39 @@ var WebPanelContent = React.createClass({
 });
 
 var WebPanel = React.createClass({
+
+    panelContent : {},
+
+    addNewDirOptimisticallyAndReload: function ( newDirName ) {
+        this.panelContent.addNewDirOptimistically(newDirName);
+        this.panelContent.reloadPanel();
+    },
+
     render: function () {
         return (
             <div className="web-panel">
-                <WebPanelContent />
+                <WebPanelContent
+                    ref={(component) => this.panelContent = component}/>
             </div>
         );
     }
 });
 
 var BeamPage = React.createClass({
+
+    contentComponent: {},
+
+    directoryCreated: function( newDirName ) {
+        this.contentComponent.addNewDirOptimisticallyAndReload(newDirName);
+    },
+
     render: function () {
         return(
             <div>
-                <Bar />
-                <WebPanel />
+                <Bar
+                    directoryCreated={this.directoryCreated} />
+                <WebPanel
+                    ref={(component) => this.contentComponent = component}/>
             </div>
         );
     }

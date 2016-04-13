@@ -129,34 +129,34 @@ var RenameDirModalDialogController = React.createClass({
                     onRequestClose={this.close}
                     shouldCloseOnOverlayClick={false}
                     style={styles.modalDialogStyle} >
-                    <label className="form-label">Edit <b>{this.props.dirName}</b> name:</label>
-                    <br/>
-                    <input type="text"
-                           id="new-dir-name"
-                           placeholder="name..."
-                           className="form-input"
-                           style={editInputStyle}
-                           value={this.state.newName}
-                           onChange={this.dirNameChanged}/>
-                    <br/>
-
-                    <div className="dialog-button-pane">
-                        <button
-                            type="button"
-                            style={editButtonStyle}
-                            onClick={this.editAction}
-                            onMouseEnter={this.editButtonToggle}
-                            onMouseLeave={this.editButtonToggle}>
-                            Edit</button>
-                        <button
-                            type="button"
-                            style={cancelButtonStyle}
-                            onClick={this.close}
-                            onMouseEnter={this.cancelButtonToggle}
-                            onMouseLeave={this.cancelButtonToggle}>
-                            Cancel</button>
+                        <label className="form-label">Edit <b>{this.props.dirName}</b> name:</label>
                         <br/>
-                    </div>
+                        <input type="text"
+                               id="new-dir-name"
+                               placeholder="name..."
+                               className="form-input"
+                               style={editInputStyle}
+                               value={this.state.newName}
+                               onChange={this.dirNameChanged}/>
+                        <br/>
+
+                        <div className="dialog-button-pane">
+                            <button
+                                type="button"
+                                style={editButtonStyle}
+                                onClick={this.editAction}
+                                onMouseEnter={this.editButtonToggle}
+                                onMouseLeave={this.editButtonToggle}>
+                                Edit</button>
+                            <button
+                                type="button"
+                                style={cancelButtonStyle}
+                                onClick={this.close}
+                                onMouseEnter={this.cancelButtonToggle}
+                                onMouseLeave={this.cancelButtonToggle}>
+                                Cancel</button>
+                            <br/>
+                        </div>
                 </Modal>
             </span>
         );

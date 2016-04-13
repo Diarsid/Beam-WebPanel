@@ -1,5 +1,6 @@
 body {
     background-image: url("http://localhost:8484/local_accesible/images/wild_paintings.jpg");
+    background-attachment: fixed;
     padding: 0;
     margin: 0;
     height:100%;
@@ -59,6 +60,7 @@ a:link, a:visited, a:hover, a:active {
     -webkit-box-shadow: inset 0px 0px 5px 0px lightgrey;
     -moz-box-shadow: inset 0px 0px 5px 0px lightgrey;
     -o-box-shadow: inset 0px 0px 5px 0px lightgrey;
+    margin-right: 4px;
 }
 
 .directory-bar-button:hover {
@@ -71,12 +73,18 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .create-page-modal-dialog-controller,
-.rename-dir-modal-dialog-controller {
+.rename-dir-modal-dialog-controller,
+.create-directory-modal-dialog-controller,
+.delete-dir-modal-dialog-controller {
     position: relative;
     top: 0px;
     left: 0px;
-    margin: 0 4px 0 0;
+    margin: 0 0 0 0;
     padding: 0 0 0 0;
+}
+
+.directory-bar .delete-dir-modal-dialog-controller {
+    float: right;
 }
 
 legend {
@@ -166,10 +174,7 @@ fieldset {
     width: 120px;
     float: left;
     padding: 0;
-    margin-top: 1vw;
-    margin-bottom: 1vw;
-    margin-left: 1.4vw;
-    margin-right: 1.4vw;
+    margin: 1vw 1.2vw 1vw 1.2vw;
 }
 
 .page-frame:hover {
@@ -200,7 +205,7 @@ fieldset {
 
 .delete-page-button:hover {
     opacity: 1;
-    background: #FCF2F2;
+    background: white;
     box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
     -webkit-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
     -moz-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
@@ -251,25 +256,25 @@ fieldset {
 
 ul.directory-content {
     list-style-type: none;
-    width: 85vw;
+    width: 100%;
     margin: 0;
     padding: 0;
 }
 
 .directory-content-wrapper {
-    padding-left: 4.5vw;
-    padding-right: 4.5vw;
+    padding-left: 4%;
+    padding-right: 4%;
 }
 
 .web-panel-content {
-    margin: 0 0 0 0;
+    margin: 0;
     padding: 0;
 }
 
 .web-panel {
     position: relative;
     left: 40px;
-    width: calc(100vw - 40px);
+    width: calc(100% - 40px);
     margin: 0 0 0 0;
     padding: 0;
 }
@@ -285,5 +290,27 @@ ul.directory-content {
     -webkit-box-shadow: 0px 0px 30px 10px black inset;
     -moz-box-shadow: 0px 0px 30px 10px black inset;
     -o-box-shadow: 0px 0px 30px 10px black inset;
+}
 
+.bar-panel {
+    position: relative;
+    top: 10vh;
+    width: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+.create-directory-bar-button {
+    border: none;
+    width: 40px;
+    height: 40px;
+    background-color: black;
+    opacity: 0.7;
+}
+
+.create-directory-bar-button:hover {
+    box-shadow: 0px 0px 30px 10px darkslateblue inset;
+    -webkit-box-shadow: 0px 0px 30px 10px darkslateblue inset;
+    -moz-box-shadow: 0px 0px 30px 10px darkslateblue inset;
+    -o-box-shadow: 0px 0px 30px 10px darkslateblue inset;
 }

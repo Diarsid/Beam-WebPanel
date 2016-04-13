@@ -47547,15 +47547,180 @@ var styles = require('.././styles.js');
 var restDispatcher = require('.././rest-dispatcher.js');
 var isWebNameValid = require('.././is-name-valid.js');
 
-var CreateDirectoryModalDialogController = React.createClass({
-    displayName: 'CreateDirectoryModalDialogController',
+var CreateDirModalDialogController = React.createClass({
+    displayName: 'CreateDirModalDialogController',
+
+
+    getInitialState: function () {
+        return {
+            open: false,
+            newName: "",
+            nameValid: false,
+            submitButtonHover: false,
+            cancelButtonHover: false
+        };
+    },
+
+    show: function () {
+        this.setState({ open: true });
+    },
+
+    close: function () {
+        this.setState({
+            open: false,
+            newName: "",
+            nameValid: false,
+            submitButtonHover: false,
+            cancelButtonHover: false
+        });
+    },
+
+    submitAction: function () {
+        if (!isWebNameValid(this.state.newName)) {
+            return;
+        }
+        var thisComponent = this;
+        var newDirName = this.state.newName;
+        var data = {
+            "name": newDirName
+        };
+        this.close();
+        $.ajax({
+            method: 'POST',
+            url: restDispatcher.composeUrlToAllDirectoriesInPlacement("webpanel"),
+            processData: false,
+            data: JSON.stringify(data),
+            cache: false,
+            success: function () {
+                thisComponent.props.directoryCreated(newDirName);
+            },
+            error: function (xhr, status, err) {
+                console.error(this.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    submitButtonToggle: function () {
+        this.setState({ submitButtonHover: !this.state.submitButtonHover });
+    },
+
+    cancelButtonToggle: function () {
+        this.setState({ cancelButtonHover: !this.state.cancelButtonHover });
+    },
+
+    getButtonStyle: function (buttonType) {
+        if (buttonType == "submit") {
+            if (this.state.nameValid) {
+                if (this.state.submitButtonHover) {
+                    return styles.dialogButtonStyleHover;
+                } else {
+                    return styles.dialogButtonStyle;
+                }
+            } else {
+                return styles.dialogForbiddenButtonStyle;
+            }
+        } else if (buttonType == "cancel") {
+            if (this.state.cancelButtonHover) {
+                return styles.dialogButtonStyleHover;
+            } else {
+                return styles.dialogButtonStyle;
+            }
+        }
+    },
+
+    onCreateButtonClickHandle: function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.show();
+    },
+
+    inputChanged: function (e) {
+        if (isWebNameValid(e.target.value)) {
+            this.setState({
+                newName: e.target.value,
+                nameValid: true
+            });
+        } else {
+            this.setState({
+                newName: e.target.value,
+                nameValid: false
+            });
+        }
+    },
+
+    getInputStyle: function () {
+        if (this.state.nameValid) {
+            return styles.validInputStyle;
+        } else {
+            return styles.invalidInputStyle;
+        }
+    },
 
     render: function () {
-        return null;
+        var submitButtonStyle = this.getButtonStyle("submit");
+        var cancelButtonStyle = this.getButtonStyle("cancel");
+        var inputStyle = this.getInputStyle();
+        return React.createElement(
+            'div',
+            { className: 'create-directory-modal-dialog-controller' },
+            React.createElement('button', {
+                className: 'create-directory-bar-button',
+                type: 'button',
+                onClick: this.onCreateButtonClickHandle
+            }),
+            React.createElement(
+                Modal,
+                {
+                    closeTimeoutMS: 0,
+                    isOpen: this.state.open,
+                    onRequestClose: this.close,
+                    shouldCloseOnOverlayClick: false,
+                    style: styles.modalDialogStyle },
+                React.createElement(
+                    'label',
+                    { className: 'form-label' },
+                    'Create new directory: '
+                ),
+                React.createElement('br', null),
+                React.createElement('input', { type: 'text',
+                    id: 'new-dir-name',
+                    placeholder: 'name...',
+                    className: 'form-input',
+                    style: inputStyle,
+                    value: this.state.newName,
+                    onChange: this.inputChanged }),
+                React.createElement('br', null),
+                React.createElement(
+                    'div',
+                    { className: 'dialog-button-pane' },
+                    React.createElement(
+                        'button',
+                        {
+                            type: 'button',
+                            style: submitButtonStyle,
+                            onClick: this.submitAction,
+                            onMouseEnter: this.submitButtonToggle,
+                            onMouseLeave: this.submitButtonToggle },
+                        'Create'
+                    ),
+                    React.createElement(
+                        'button',
+                        {
+                            type: 'button',
+                            style: cancelButtonStyle,
+                            onClick: this.close,
+                            onMouseEnter: this.cancelButtonToggle,
+                            onMouseLeave: this.cancelButtonToggle },
+                        'Cancel'
+                    ),
+                    React.createElement('br', null)
+                )
+            )
+        );
     }
 });
 
-module.exports = CreateDirectoryModalDialogController;
+module.exports = CreateDirModalDialogController;
 
 },{".././is-name-valid.js":188,".././rest-dispatcher.js":191,".././styles.js":192,"jquery":31,"react":182,"react-modal":53}],184:[function(require,module,exports){
 var React = require('react');
@@ -47719,7 +47884,11 @@ var CreatePageModalDialogController = React.createClass({
                             'legend',
                             null,
                             'Create new page in ',
-                            this.props.dirName,
+                            React.createElement(
+                                'b',
+                                null,
+                                this.props.dirName
+                            ),
                             ':'
                         ),
                         React.createElement(
@@ -47790,20 +47959,146 @@ var $ = require('jquery');
 
 var styles = require('.././styles.js');
 var restDispatcher = require('.././rest-dispatcher.js');
-var isWebNameValid = require('.././is-name-valid.js');
 
 var DeleteDirModalDialogController = React.createClass({
     displayName: 'DeleteDirModalDialogController',
 
 
+    getInitialState: function () {
+        return {
+            open: false,
+            submitButtonHover: false,
+            cancelButtonHover: false
+        };
+    },
+
+    show: function () {
+        this.setState({ open: true });
+    },
+
+    close: function () {
+        this.setState({
+            open: false,
+            submitButtonHover: false,
+            cancelButtonHover: false
+        });
+    },
+
+    onControlButtonClickHandle: function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.show();
+    },
+
+    submitAction: function () {
+        var thisComponent = this;
+        this.close();
+        $.ajax({
+            method: 'DELETE',
+            url: restDispatcher.composeUrlToDirectory("webpanel", this.props.dirName),
+            processData: false,
+            cache: false,
+            success: function () {
+                thisComponent.props.directoryDeleted(thisComponent.props.dirName);
+            },
+            error: function (xhr, status, err) {
+                console.error(this.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    submitButtonToggle: function () {
+        this.setState({ submitButtonHover: !this.state.submitButtonHover });
+    },
+
+    cancelButtonToggle: function () {
+        this.setState({ cancelButtonHover: !this.state.cancelButtonHover });
+    },
+
+    getButtonStyle: function (buttonType) {
+        if (buttonType == "submit") {
+            if (this.state.submitButtonHover) {
+                return styles.dialogButtonStyleHover;
+            } else {
+                return styles.dialogButtonStyle;
+            }
+        } else if (buttonType == "cancel") {
+            if (this.state.cancelButtonHover) {
+                return styles.dialogButtonStyleHover;
+            } else {
+                return styles.dialogButtonStyle;
+            }
+        }
+    },
+
     render: function () {
-        return React.createElement('span', null);
+        var submitButtonStyle = this.getButtonStyle("submit");
+        var cancelButtonStyle = this.getButtonStyle("cancel");
+        return React.createElement(
+            'span',
+            { className: 'delete-dir-modal-dialog-controller' },
+            React.createElement('button', { type: 'button',
+                className: 'directory-bar-button',
+                onClick: this.onControlButtonClickHandle }),
+            React.createElement(
+                Modal,
+                {
+                    closeTimeoutMS: 0,
+                    isOpen: this.state.open,
+                    onRequestClose: this.close,
+                    shouldCloseOnOverlayClick: false,
+                    style: styles.modalDialogStyle },
+                React.createElement(
+                    'label',
+                    { className: 'form-label' },
+                    'Delete ',
+                    React.createElement(
+                        'b',
+                        null,
+                        this.props.dirName
+                    ),
+                    ' ?'
+                ),
+                React.createElement('br', null),
+                React.createElement(
+                    'label',
+                    { className: 'form-label' },
+                    'All pages in directory will be deleted also.'
+                ),
+                React.createElement('br', null),
+                React.createElement(
+                    'div',
+                    { className: 'dialog-button-pane' },
+                    React.createElement(
+                        'button',
+                        {
+                            type: 'button',
+                            style: submitButtonStyle,
+                            onClick: this.submitAction,
+                            onMouseEnter: this.submitButtonToggle,
+                            onMouseLeave: this.submitButtonToggle },
+                        'Delete'
+                    ),
+                    React.createElement(
+                        'button',
+                        {
+                            type: 'button',
+                            style: cancelButtonStyle,
+                            onClick: this.close,
+                            onMouseEnter: this.cancelButtonToggle,
+                            onMouseLeave: this.cancelButtonToggle },
+                        'Cancel'
+                    ),
+                    React.createElement('br', null)
+                )
+            )
+        );
     }
 });
 
 module.exports = DeleteDirModalDialogController;
 
-},{".././is-name-valid.js":188,".././rest-dispatcher.js":191,".././styles.js":192,"jquery":31,"react":182,"react-modal":53}],186:[function(require,module,exports){
+},{".././rest-dispatcher.js":191,".././styles.js":192,"jquery":31,"react":182,"react-modal":53}],186:[function(require,module,exports){
 var React = require('react');
 var Modal = require('react-modal');
 var $ = require('jquery');
@@ -48134,7 +48429,7 @@ var styles = require('./styles');
 
 // React components
 var DeletePageModalDialog = require('./dialogs/delete-page-dialog.js');
-var CreateDirectoryModalDialogController = require('./dialog-controllers/create-directory-controller.js');
+var CreateDirModalDialogController = require('./dialog-controllers/create-directory-controller.js');
 var DeleteDirModalDialogController = require('./dialog-controllers/delete-directory-controller.js');
 var RenameDirModalDialogController = require('./dialog-controllers/rename-directory-controller.js');
 var CreatePageModalDialogController = require('./dialog-controllers/create-page-controller.js');
@@ -48143,11 +48438,17 @@ var CreatePageModalDialogController = require('./dialog-controllers/create-page-
 var Bar = React.createClass({
     displayName: 'Bar',
 
+
     render: function () {
         return React.createElement(
             'div',
             { className: 'bar' },
-            React.createElement('div', { className: 'bar-panel' })
+            React.createElement(
+                'div',
+                { className: 'bar-panel' },
+                React.createElement(CreateDirModalDialogController, {
+                    directoryCreated: this.props.directoryCreated })
+            )
         );
     }
 });
@@ -48360,23 +48661,48 @@ var DirectoryContent = React.createClass({
     },
 
     getInitialState: function () {
-        return { pages: this.props.pages };
+        return {
+            pages: this.props.pages,
+            intervalReloading: {}
+        };
+    },
+
+    propsAreNotEqual: function (oldProps, nextProps) {
+        if (oldProps.name != nextProps.name) {
+            console.log('props are different: dir names are not equal');
+            return true;
+        }
+        if (oldProps.pages.length != nextProps.pages.length) {
+            console.log('props are different: page arrays lengths are not equal');
+            return true;
+        }
+        var length = oldProps.pages.length;
+        for (var i = 0; i < length; i++) {
+            if (oldProps.pages[i].name != nextProps.pages[i].name) {
+                console.log('props are different: page name in array is not equal');
+                return true;
+            }
+        }
+        return false;
     },
 
     componentWillReceiveProps: function (nextProps) {
         this.setState({ pages: nextProps.pages });
-        $.ajax({
-            method: 'GET',
-            url: restDispatcher.composeUrlToAllPagesInDirectory("webpanel", nextProps.name),
-            dataType: 'json',
-            cache: false,
-            success: function (responsePages) {
-                this.setState({ pages: responsePages });
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(this.url, status, err.toString());
-            }.bind(this)
-        });
+        if (this.propsAreNotEqual(this.props, nextProps)) {
+            console.log('Directory should update its pages -> props are not equal');
+            $.ajax({
+                method: 'GET',
+                url: restDispatcher.composeUrlToAllPagesInDirectory("webpanel", nextProps.name),
+                dataType: 'json',
+                cache: false,
+                success: function (responsePages) {
+                    this.setState({ pages: responsePages });
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.url, status, err.toString());
+                }.bind(this)
+            });
+        }
     },
 
     ajaxGetPages: function () {
@@ -48441,9 +48767,13 @@ var DirectoryContent = React.createClass({
             }
         }).disableSelection();
 
-        this.ajaxGetPages();
+        var interval = setInterval(this.ajaxGetPages, 1000 * 60);
+        this.setState({ intervalReloading: interval });
+    },
 
-        setInterval(this.ajaxGetPages, 1000 * 60);
+    componentWillUnmount: function () {
+        clearInterval(this.state.intervalReloading);
+        console.log('DirectoryContent::UNMOUNT > ' + this.props.name);
     },
 
     render: function () {
@@ -48537,7 +48867,10 @@ var WebPanelContent = React.createClass({
 
 
     getInitialState: function () {
-        return { dirs: [] };
+        return {
+            dirs: [],
+            intervalReloading: {}
+        };
     },
 
     ajaxGetDirectories: function () {
@@ -48547,20 +48880,6 @@ var WebPanelContent = React.createClass({
             cache: false,
             success: function (obtainedDirs) {
                 this.setState({ dirs: obtainedDirs });
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(this.url, status, err.toString());
-            }.bind(this)
-        });
-    },
-
-    ajaxDeleteDir: function (dirToDelete) {
-        $.ajax({
-            method: 'DELETE',
-            url: restDispatcher.composeUrlToDirectory('webpanel', dirToDelete),
-            cache: false,
-            success: function () {
-                this.ajaxGetDirectories();
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error(this.url, status, err.toString());
@@ -48624,12 +48943,31 @@ var WebPanelContent = React.createClass({
 
         this.ajaxGetDirectories();
 
-        setInterval(this.ajaxGetDirectories, 1000 * 60);
+        var interval = setInterval(this.ajaxGetDirectories, 1000 * 60);
+        this.setState({ intervalReloading: interval });
+    },
+
+    componentWillUnmount: function () {
+        clearInterval(this.state.intervalReloading);
     },
 
     reloadPanel: function () {
         this.ajaxGetDirectories();
         //console.log('WebPanelContent::reload()')
+    },
+
+    addNewDirOptimistically: function (newDirName) {
+        var currentDirs = cloneDeep(this.state.dirs);
+        var newOrder = currentDirs.length + 1;
+        var newDirPages = [];
+        currentDirs.push({
+            name: newDirName,
+            order: newOrder,
+            pages: newDirPages
+        });
+        this.setState({ dirs: currentDirs });
+        console.log('dirs after add new dir:');
+        console.log(currentDirs);
     },
 
     deleteDirOptimistically: function (dirToDelete) {
@@ -48647,7 +48985,7 @@ var WebPanelContent = React.createClass({
                 }
         }
         this.setState({ dirs: newDirs });
-        this.ajaxDeleteDir(dirToDelete);
+        this.ajaxGetDirectories();
         console.log(newDirs);
     },
 
@@ -48674,11 +49012,20 @@ var WebPanelContent = React.createClass({
 var WebPanel = React.createClass({
     displayName: 'WebPanel',
 
+
+    panelContent: {},
+
+    addNewDirOptimisticallyAndReload: function (newDirName) {
+        this.panelContent.addNewDirOptimistically(newDirName);
+        this.panelContent.reloadPanel();
+    },
+
     render: function () {
         return React.createElement(
             'div',
             { className: 'web-panel' },
-            React.createElement(WebPanelContent, null)
+            React.createElement(WebPanelContent, {
+                ref: component => this.panelContent = component })
         );
     }
 });
@@ -48686,12 +49033,21 @@ var WebPanel = React.createClass({
 var BeamPage = React.createClass({
     displayName: 'BeamPage',
 
+
+    contentComponent: {},
+
+    directoryCreated: function (newDirName) {
+        this.contentComponent.addNewDirOptimisticallyAndReload(newDirName);
+    },
+
     render: function () {
         return React.createElement(
             'div',
             null,
-            React.createElement(Bar, null),
-            React.createElement(WebPanel, null)
+            React.createElement(Bar, {
+                directoryCreated: this.directoryCreated }),
+            React.createElement(WebPanel, {
+                ref: component => this.contentComponent = component })
         );
     }
 });
@@ -48750,24 +49106,31 @@ module.exports = reorderItems;
 },{}],191:[function(require,module,exports){
 
 var restDispatcher = {
+
     coreUrl: "http://localhost:35001/beam/core/resources/",
+
     composeUrlToAllDirectoriesInPlacement: function (placement) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs");
+        return this.coreUrl + placement + "/dirs";
     },
+
     composeUrlToDirectory: function (placement, dirName) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs/").concat(dirName.toString());
+        return this.coreUrl + placement + "/dirs/" + dirName;
     },
+
     composeUrlToDirectoryField: function (placement, dirName, fieldName) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs/").concat(dirName.toString()).concat("/").concat(fieldName.toString());
+        return this.coreUrl + placement + "/dirs/" + dirName + "/" + fieldName;
     },
+
     composeUrlToAllPagesInDirectory: function (placement, dirName) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs/").concat(dirName.toString()).concat("/pages");
+        return this.coreUrl + placement + "/dirs/" + dirName + "/pages";
     },
+
     composeUrlToPage: function (placement, dirName, pageName) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs/").concat(dirName.toString()).concat("/pages/").concat(pageName.toString());
+        return this.coreUrl + placement + "/dirs/" + dirName + "/pages/" + pageName;
     },
+
     composeUrlToPageField: function (placement, dirName, pageName, fieldName) {
-        return this.coreUrl.concat(placement.toString()).concat("/dirs/").concat(dirName.toString()).concat("/pages/").concat(pageName.toString()).concat("/").concat(fieldName.toString());
+        return this.coreUrl + placement + "/dirs/" + dirName + "/pages/" + pageName + "/" + fieldName;
     }
 };
 

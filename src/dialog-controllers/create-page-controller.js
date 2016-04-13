@@ -149,7 +149,7 @@ var CreatePageModalDialogController = React.createClass({
 
                     <form className="create-page-dialog">
                         <fieldset>
-                            <legend>Create new page in {this.props.dirName}:</legend>
+                            <legend>Create new page in <b>{this.props.dirName}</b>:</legend>
                             <label className="form-label">Page name:</label>
                             <br/>
                             <input type="text"
