@@ -42,7 +42,12 @@ var DeletePageButton = React.createClass({
     render: function () {
         if (this.props.frameHover) {
             return (
-                <button type="button" className="delete-page-button" onClick={this.deleteAction}></button>
+                <button
+                    type="button"
+                    className="delete-page-button"
+                    id="page-frame-delete-page-button"
+                    onClick={this.deleteAction}
+                ></button>
             );
         } else {
             return null;

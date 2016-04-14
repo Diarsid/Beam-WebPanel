@@ -138,6 +138,7 @@ var CreatePageModalDialogController = React.createClass({
             <span className="create-page-modal-dialog-controller">
                 <button type="button"
                         className="directory-bar-button"
+                        id="directory-bar-create-page-button"
                         onClick={this.onCreateButtonClickHandle}>
                 </button>
                 <Modal

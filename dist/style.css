@@ -27,20 +27,21 @@ a:link, a:visited, a:hover, a:active {
 .directory-bar {
     box-sizing: border-box;
     height: 28px;
-    border: 1px solid darkgray;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: inset 0px 0px 10px 0px lightgrey;
-    -webkit-box-shadow: inset 0px 0px 10px 0px lightgrey;
-    -moz-box-shadow: inset 0px 0px 10px 0px lightgrey;
-    -o-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    background-color: rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: inset 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: inset 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
+    -o-box-shadow: inset 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
     margin: 0;
     padding: 3px 3px 3px 3px;
 }
 
 .directory-bar-title {
-    color: #1C1C1C;
+    color: #fafafa;
+    opacity: 0.95;
     font-family: Verdana;
     font-size: 15px;
     margin: 0 0 0 30px;
@@ -54,13 +55,17 @@ a:link, a:visited, a:hover, a:active {
     width: 20px;
     border: 1px solid lightgrey;
     box-sizing: border-box;
-    opacity: 0.85;
+    opacity: 0.9;
     background-color: #fafafa;
     box-shadow: inset 0px 0px 5px 0px lightgrey;
     -webkit-box-shadow: inset 0px 0px 5px 0px lightgrey;
     -moz-box-shadow: inset 0px 0px 5px 0px lightgrey;
     -o-box-shadow: inset 0px 0px 5px 0px lightgrey;
     margin-right: 4px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .directory-bar-button:hover {
@@ -70,7 +75,49 @@ a:link, a:visited, a:hover, a:active {
     -webkit-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
     -moz-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
     -o-box-shadow: 0px 0px 10px 0px white, inset 0px 0px 3px 0px lightgrey;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
+
+#directory-bar-create-page-button {
+    background-image: url("./img/create-page-inactive.png");
+}
+#directory-bar-create-page-button:hover {
+    background-image: url("./img/create-page-active.png");
+}
+
+#directory-bar-delete-directory-button {
+    background-image: url("./img/del-inactive.png");
+}
+#directory-bar-delete-directory-button:hover {
+    background-image: url("./img/del-active.png");
+}
+
+#directory-bar-rename-directory-button {
+    background-image: url("./img/edit-page-inactive.png");
+}
+#directory-bar-rename-directory-button:hover {
+    background-image: url("./img/edit-page-active.png");
+}
+
+#page-frame-delete-page-button {
+    background-image: url("./img/del-inactive.png");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+#page-frame-delete-page-button:hover {
+    background-image: url("./img/del-active.png");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+
 
 .create-page-modal-dialog-controller,
 .rename-dir-modal-dialog-controller,
@@ -187,11 +234,11 @@ fieldset {
 
 .delete-page-button {
     position: relative;
-    top: -130px;
-    right: -104px;
+    top: -128px;
+    right: -107px;
     border-radius: 6px;
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
     border: 1px solid lightgrey;
     box-sizing: border-box;
     opacity: 0.9;

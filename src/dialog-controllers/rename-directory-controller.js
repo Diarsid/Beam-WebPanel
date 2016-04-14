@@ -121,6 +121,7 @@ var RenameDirModalDialogController = React.createClass({
             <span className="rename-dir-modal-dialog-controller">
                 <button type="button"
                         className="directory-bar-button"
+                        id="directory-bar-rename-directory-button"
                         onClick={this.onEditButtonClickHandle}>
                 </button>
                 <Modal

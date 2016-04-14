@@ -47865,6 +47865,7 @@ var CreatePageModalDialogController = React.createClass({
             { className: 'create-page-modal-dialog-controller' },
             React.createElement('button', { type: 'button',
                 className: 'directory-bar-button',
+                id: 'directory-bar-create-page-button',
                 onClick: this.onCreateButtonClickHandle }),
             React.createElement(
                 Modal,
@@ -48039,6 +48040,7 @@ var DeleteDirModalDialogController = React.createClass({
             { className: 'delete-dir-modal-dialog-controller' },
             React.createElement('button', { type: 'button',
                 className: 'directory-bar-button',
+                id: 'directory-bar-delete-directory-button',
                 onClick: this.onControlButtonClickHandle }),
             React.createElement(
                 Modal,
@@ -48063,7 +48065,7 @@ var DeleteDirModalDialogController = React.createClass({
                 React.createElement(
                     'label',
                     { className: 'form-label' },
-                    'All pages in directory will be deleted also.'
+                    'All pages in this directory will be deleted also.'
                 ),
                 React.createElement('br', null),
                 React.createElement(
@@ -48225,6 +48227,7 @@ var RenameDirModalDialogController = React.createClass({
             { className: 'rename-dir-modal-dialog-controller' },
             React.createElement('button', { type: 'button',
                 className: 'directory-bar-button',
+                id: 'directory-bar-rename-directory-button',
                 onClick: this.onEditButtonClickHandle }),
             React.createElement(
                 Modal,
@@ -48465,7 +48468,12 @@ var DeletePageButton = React.createClass({
 
     render: function () {
         if (this.props.frameHover) {
-            return React.createElement('button', { type: 'button', className: 'delete-page-button', onClick: this.deleteAction });
+            return React.createElement('button', {
+                type: 'button',
+                className: 'delete-page-button',
+                id: 'page-frame-delete-page-button',
+                onClick: this.deleteAction
+            });
         } else {
             return null;
         }

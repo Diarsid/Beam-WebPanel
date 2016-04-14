@@ -81,6 +81,7 @@ var DeleteDirModalDialogController = React.createClass({
             <span className="delete-dir-modal-dialog-controller">
                 <button type="button"
                         className="directory-bar-button"
+                        id="directory-bar-delete-directory-button"
                         onClick={this.onControlButtonClickHandle}>
                 </button>
                 <Modal
@@ -91,7 +92,7 @@ var DeleteDirModalDialogController = React.createClass({
                     style={styles.modalDialogStyle} >
                         <label className="form-label">Delete <b>{this.props.dirName}</b> ?</label>
                         <br/>
-                        <label className="form-label">All pages in directory will be deleted also.</label>
+                        <label className="form-label">All pages in this directory will be deleted also.</label>
                         <br/>
                         <div className="dialog-button-pane">
                             <button
