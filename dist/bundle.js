@@ -48381,7 +48381,7 @@ var DeletePageModalDialog = React.createClass({
                         null,
                         this.props.page
                     ),
-                    ' ?'
+                    ' page?'
                 ),
                 React.createElement('br', null),
                 React.createElement(

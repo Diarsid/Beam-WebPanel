@@ -70,7 +70,7 @@ var DeletePageModalDialog = React.createClass({
                     onRequestClose={this.close}
                     shouldCloseOnOverlayClick={false}
                     style={styles.modalDialogStyle} >
-                    <label className="form-label">Delete <b>{this.props.page}</b> ?</label>
+                    <label className="form-label">Delete <b>{this.props.page}</b> page?</label>
                     <br/>
 
                     <div className="dialog-button-pane">

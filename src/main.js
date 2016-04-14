@@ -10,11 +10,11 @@ var reorderItems =      require('./reorder-items.js');
 var styles =            require('./styles');
 
 // React components
-var DeletePageModalDialog =                 require('./dialogs/delete-page-dialog.js');
-var CreateDirModalDialogController =  require('./dialog-controllers/create-directory-controller.js');
-var DeleteDirModalDialogController =        require('./dialog-controllers/delete-directory-controller.js');
-var RenameDirModalDialogController =        require('./dialog-controllers/rename-directory-controller.js');
-var CreatePageModalDialogController =       require('./dialog-controllers/create-page-controller.js');
+var DeletePageModalDialog =             require('./dialogs/delete-page-dialog.js');
+var CreateDirModalDialogController =    require('./dialog-controllers/create-directory-controller.js');
+var DeleteDirModalDialogController =    require('./dialog-controllers/delete-directory-controller.js');
+var RenameDirModalDialogController =    require('./dialog-controllers/rename-directory-controller.js');
+var CreatePageModalDialogController =   require('./dialog-controllers/create-page-controller.js');
 
 // Main React components
 var Bar = React.createClass({
